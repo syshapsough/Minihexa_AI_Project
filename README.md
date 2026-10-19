@@ -2,7 +2,7 @@
 
 A collection of reference projects for experimenting with **camera-based perception, AI inference, and movement control** on the Hiwonder MiniHexa hexapod robot.
 
-This repository is intended to help COE476 teams understand the existing implementations and build their own autonomous applications. **The formal project requirements and assessment details are in the separate COE476 project brief**, not in this README.
+This repository is intended to help COE476 teams understand the existing implementations and build their own autonomous applications.
 
 ## What's in this repository?
 
