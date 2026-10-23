@@ -5,7 +5,9 @@ This repository contains two reference projects for the **Hiwonder MiniHexa** he
 ## Demo Video
 The following video demonstrates the MiniHexa autonomously navigating its environment, detecting a punching bag using computer vision, approaching the target, and executing a predefined movement.
 
-https://github.com/user-attachments/assets/07b867d7-3205-4a19-8d94-7e3927bb8069
+
+https://github.com/user-attachments/assets/2729d2fe-4171-414c-b8c4-2f87c21bf750
+
 
 
 ## Reference projects at a glance
