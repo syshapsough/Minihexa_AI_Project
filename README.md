@@ -2,6 +2,10 @@
 
 This repository contains two reference projects for the **Hiwonder MiniHexa** hexapod: a camera-based image classifier and a movement controller. They demonstrate how a robot can perceive an object, approach it, and perform a predefined movement. Use these implementations as starting points for your own COE476 application; consult the separate course project brief for formal requirements and deliverables.
 
+## Demo Video
+The following video demonstrates the MiniHexa autonomously navigating its environment, detecting a punching bag using computer vision, approaching the target, and executing a predefined movement.
+https://github.com/user-attachments/assets/07b867d7-3205-4a19-8d94-7e3927bb8069
+
 ## Reference projects at a glance
 
 | Detail | `MiniHexa_Controller` | `MiniHexa_Camera_AI` |
