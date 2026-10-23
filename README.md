@@ -175,3 +175,8 @@ Keep application source, manifests, local libraries, model files, and required a
 ```
 
 If you change framework versions or board settings, record those changes in your project documentation. Test robot movements with adequate clearance and be ready to disconnect power.
+
+## References
+MiniHexa: https://www.hiwonder.com/products/minihexa?variant=41832256569431&srsltid=AYCX9vK-pytnrW2Yg73HKAmwYr04Ed5tqybn3pX2Vp4-PFJVybRlcNy2
+VS Code: https://code.visualstudio.com/
+PlatformIO for VS Code: https://docs.platformio.org/en/latest/integration/ide/vscode.html#quick-start
