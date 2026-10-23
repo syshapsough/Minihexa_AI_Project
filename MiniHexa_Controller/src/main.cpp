@@ -1,405 +1,459 @@
-// // // // // // // #include <Arduino.h>
-// // // // // // // #include "hiwonder_robot.h"
 
-// // // // // // // Robot minihexa;
-// // // // // // // uint8_t red[4] = {0};
-
-// // // // // // // void setup() {
-// // // // // // //   Serial.begin(115200);
-// // // // // // //   minihexa.begin();
-// // // // // // //   delay(200);
-// // // // // // // Serial.println("MiniHexa camera I2C test - NO walking commands");
-// // // // // // // }
-
-// // // // // // // void loop() {
-// // // // // // //   red[0] = red[1] = red[2] = red[3] = 0;
-// // // // // // //   // Official camera protocol: I2C 0x52, register 0xA1, 4 bytes.
-// // // // // // //   uint16_t received = minihexa.sensor.camera.region2_red_block_detection(red, sizeof(red));
-// // // // // // //   if (received == 4) {
-// // // // // // //     Serial.printf("Red: x=%u y=%u width=%u length=%u\n", red[0], red[1], red[2], red[3]);
-// // // // // // //     if (red[2] == 0 || red[3] == 0) Serial.println("No red ribbon detected");
-// // // // // // //   } else {
-// // // // // // //     Serial.printf("Camera I2C read failed (received=%u)\n", received);
-// // // // // // //   }
-// // // // // // //   delay(300);
-// // // // // // // }
-// // // // // // #include <Arduino.h>
-// // // // // // #include <Wire.h>
-
-// // // // // // void setup() {
-// // // // // //     Serial.begin(115200);
-// // // // // //     delay(2000);
-
-// // // // // //     Wire.begin(22, 23);
-// // // // // //     Serial.println("Scanning I2C bus...");
-// // // // // // }
-
-// // // // // // void loop() {
-// // // // // //     for (uint8_t address = 1; address < 127; address++) {
-// // // // // //         Wire.beginTransmission(address);
-
-// // // // // //         if (Wire.endTransmission() == 0) {
-// // // // // //             Serial.printf("Found I2C device at 0x%02X\n", address);
-// // // // // //         }
-// // // // // //     }
-
-// // // // // //     Serial.println("Scan complete.");
-// // // // // //     delay(3000);
-// // // // // // }
-
-// // // // // #include <Arduino.h>
-// // // // // #include <Wire.h>
-
-// // // // // #include "hiwonder_robot.h"
-
-// // // // // Robot minihexa;
-
-// // // // // constexpr uint8_t CAMERA_ADDR = 0x52;
-
-// // // // // int lastDetection = -1;
-
-// // // // // void setup() {
-// // // // //     Serial.begin(115200);
-// // // // //     Wire.begin(22, 23);
-
-// // // // //     delay(1000);
-// // // // //     Serial.println("MiniHexa AI camera ready!");
-// // // // // }
-
-// // // // // void loop() {
-// // // // //     int received = Wire.requestFrom(CAMERA_ADDR, (uint8_t)1);
-
-// // // // //     if (received == 1 && Wire.available()) {
-// // // // //         int detection = Wire.read();
-
-// // // // //         if (detection == 0 || detection == 1) {
-// // // // //             Serial.printf("Camera returned: %d\n", detection);
-// // // // //         } else {
-// // // // //             Serial.printf("Invalid camera value: %d\n", detection);
-// // // // //         }
-// // // // //     } else {
-// // // // //         Serial.println("Camera read failed");
-// // // // //     }
-
-// // // // //     delay(100);
-// // // // // }
-
-// // // #include <Arduino.h>
-// // // #include "hiwonder_robot.h"
-
-// // // Robot minihexa;
-
-// // // Velocity_t velocity = {0.0f, 0.0f, 0.0f};
-// // // Vector_t position = {0.0f, 0.0f, 0.0f};
-// // // Euler_t euler = {0.0f, 0.0f, 0.0f};
-
-// // // bool movementStarted = false;
-// // // bool movementFinished = false;
-
-// // // unsigned long startTime = 0;
-
-// // // void setup()
-// // // {
-// // //     Serial.begin(115200);
-
-// // //     minihexa.begin();
-
-// // //     Serial.println("MiniHexa initialized");
-// // //     Serial.println("Starting movement test in 3 seconds");
-
-// // //     startTime = millis();
-// // // }
-
-// // // void loop()
-// // // {
-// // //     // Robot movement is updated by the library's internal timer.
-
-// // //     if (!movementStarted && millis() - startTime >= 3000)
-// // //     {
-// // //         Serial.println("Walking forward");
-
-// // //         velocity = {0.0f, 1.0f, 0.0f};
-
-// // //         minihexa.move(
-// // //             &velocity,
-// // //             &position,
-// // //             &euler,
-// // //             1000,
-// // //             2
-// // //         );
-
-// // //         movementStarted = true;
-// // //     }
-
-// // //     if (movementStarted &&
-// // //         !movementFinished &&
-// // //         minihexa.move_state == Robot::REST)
-// // //     {
-// // //         Serial.println("Movement completed");
-// // //         movementFinished = true;
-// // //     }
-
-// // //     delay(20);
-// // // }
-
-
-
-// // // // #include <Arduino.h>
-// // // // #include "hiwonder_robot.h"
-
-// // // // Robot minihexa;
-
-// // // // // Rough estimate for a 7.4V (2-cell) Li-ion battery
-// // // // int batteryPercentage(float voltage)
-// // // // {
-// // // //     float percentage = (voltage - 7.0f) / (8.4f - 7.0f) * 100.0f;
-// // // //     return constrain((int)roundf(percentage), 0, 100);
-// // // // }
-
-// // // // void setup()
-// // // // {
-// // // //     Serial.begin(115200);
-// // // //     minihexa.begin();
-
-// // // //     Serial.println("MiniHexa Battery Monitor");
-// // // //     delay(2000);
-// // // // }
-
-// // // // void loop()
-// // // // {
-// // // //     float voltage = minihexa.board.bat_voltage / 1000.0f;
-
-// // // //     Serial.printf("Battery: %.2f V | Estimated charge: %d%%\n",
-// // // //                   voltage,
-// // // //                   batteryPercentage(voltage));
-
-// // // //     delay(1000);
-// // // // }
-
-
-
-
-// #include <Arduino.h>
-// #include <Wire.h>
-// #include "hiwonder_robot.h"
-
-// Robot minihexa;
-
-// // Configuration
-// #define CAMERA_ADDR     0x52
-// #define STOP_DISTANCE   150    // 10 cm in mm
-// #define RESET_DISTANCE  150    // 15 cm in mm
-// #define COMBAT_ACTION   7      // Hiwonder Combat 1
-
-// Velocity_t velocity = {0.0f, 0.0f, 0.0f};
-// Vector_t position = {0.0f, 0.0f, 0.0f};
-// Euler_t euler = {0.0f, 0.0f, 0.0f};
-
-// bool walking = false;
-// bool attacked = false;
-
-// unsigned long lastCheck = 0;
-
-// void stopWalking()
-// {
-//     if (!walking) return;
-
-//     velocity = {0.0f, 0.0f, 0.0f};
-//     minihexa.move(&velocity, &position, &euler, 400);
-
-//     walking = false;
-//     delay(450);
-// }
-
-// void startWalking()
-// {
-//     if (walking) return;
-
-//     velocity = {0.0f, 1.0f, 0.0f};
-//     euler = {0.0f, 0.0f, 0.0f};
-
-//     minihexa.move(
-//         &velocity,
-//         &position,
-//         &euler,
-//         1000,
-//         -1
-//     );
-
-//     walking = true;
-
-//     Serial.println("APPROACHING TARGET");
-// }
-
-// void attack()
-// {
-//     Serial.println("COMBAT MODE ACTIVATED!");
-
-//     minihexa.action_group_run(COMBAT_ACTION);
-
-//     Serial.println("ATTACK COMPLETED");
-// }
-
-// void setup()
-// {
-//     Serial.begin(115200);
-
-//     minihexa.begin();
-
-//     Serial.println("MiniHexa AI Boxing Robot");
-//     Serial.println("Checking available action groups...");
-
-//     minihexa.list_action_group_dir();
-
-//     Serial.println("Waiting for target...");
-// }
-
-// void loop()
-// {
-//     if (millis() - lastCheck < 100) return;
-//     lastCheck = millis();
-
-//     // Read AI camera detection
-//     uint8_t detected = 0;
-
-//     if (Wire.requestFrom((uint8_t)CAMERA_ADDR,
-//                          (uint8_t)1) == 1)
-//     {
-//         detected = Wire.read();
-//     }
-
-//     // Read ultrasonic distance in mm
-//     uint16_t distance = minihexa.sensor.get_distance();
-
-//     Serial.printf(
-//         "AI: %d | Distance: %d mm\n",
-//         detected,
-//         distance
-//     );
-
-//     // Invalid distance: stop
-//     if (distance == 0)
-//     {
-//         stopWalking();
-//         return;
-//     }
-
-//     // Reset attack when target moves away
-//     if (distance >= RESET_DISTANCE)
-//     {
-//         attacked = false;
-//     }
-
-//     // Target detected and within attack range
-//     if (detected == 1 && distance <= STOP_DISTANCE)
-//     {
-//         stopWalking();
-
-//         if (!attacked)
-//         {
-//             attacked = true;
-//             attack();
-//         }
-
-//         return;
-//     }
-
-//     // Stop if target is lost or already attacked
-//     if (detected != 1 || attacked)
-//     {
-//         stopWalking();
-//         return;
-//     }
-
-//     // Target detected and farther than 10 cm
-//     if (distance > STOP_DISTANCE)
-//     {
-//         startWalking();
-//     }
-// }
-
+/*
+ * ============================================================
+ * MiniHexa - Autonomous Punching Bag Tracking and Combat
+ * ============================================================
+ *
+ * Hardware: Hiwonder MiniHexa Robot
+ * Framework: Arduino
+ *
+ * Description:
+ * Controls the MiniHexa robot using detection results
+ * received from an ESP32-S3 camera over I2C.
+ *
+ * The robot uses:
+ *   - Camera AI detection to identify the punching bag.
+ *   - Ultrasonic distance sensing to approach the target.
+ *   - Predefined action groups to perform combat movements.
+ *
+ * Robot behavior:
+ *
+ *   1. Read the camera detection result.
+ *   2. Measure the distance to the target.
+ *   3. Walk forward when the target is detected.
+ *   4. Stop when the target is sufficiently close.
+ *   5. Execute the selected combat action.
+ *
+ * ============================================================
+ */
+
+
+/* ============================================================
+ * SECTION 1: LIBRARIES AND GLOBAL CONFIGURATION
+ * ============================================================ */
+
+// Arduino framework and standard functions
 #include <Arduino.h>
+
+// Arduino I2C communication library
 #include <Wire.h>
+
+// Hiwonder MiniHexa robot control library
 #include "hiwonder_robot.h"
 
+// Create the robot control object
 Robot minihexa;
 
+/*
+ * System configuration
+ *
+ * CAMERA_ADDR:
+ *   I2C address of the ESP32-S3 camera module.
+ *
+ * COMBAT_ACTION:
+ *   Action group executed when the target is reached.
+ *   7 = Combat 1
+ *   8 = Combat 2
+ *
+ * STOP_DISTANCE_MM:
+ *   Distance at which the robot stops and attacks.
+ *
+ * RESET_DISTANCE_MM:
+ *   Distance required to reset the attack state.
+ *
+ * CHECK_INTERVAL_MS:
+ *   Minimum interval between sensor checks.
+ */
 constexpr uint8_t CAMERA_ADDR = 0x52;
 constexpr uint8_t COMBAT_ACTION = 8; // Change to 7 for Combat 1
+
 constexpr uint16_t STOP_DISTANCE_MM = 150;
 constexpr uint16_t RESET_DISTANCE_MM = 200;
+
 constexpr unsigned long CHECK_INTERVAL_MS = 100;
 
+/*
+ * Robot movement parameters
+ *
+ * Velocity_t:
+ *   Controls translational and rotational movement.
+ *
+ * Vector_t:
+ *   Controls the robot's body position.
+ *
+ * Euler_t:
+ *   Controls the robot's body orientation.
+ *
+ * All values are initially set to zero.
+ */
 Velocity_t velocity = {0.0f, 0.0f, 0.0f};
 Vector_t position = {0.0f, 0.0f, 0.0f};
 Euler_t euler = {0.0f, 0.0f, 0.0f};
 
+/*
+ * Robot state variables
+ *
+ * walking:
+ *   Indicates whether the robot is currently walking.
+ *
+ * attacked:
+ *   Prevents the combat action from repeating continuously
+ *   while the robot remains close to the target.
+ *
+ * lastCheck:
+ *   Stores the time of the previous sensor check.
+ */
 bool walking = false;
 bool attacked = false;
+
 unsigned long lastCheck = 0;
 
-void stopWalking() {
-    if (!walking) return;
+
+/* ============================================================
+ * SECTION 2: STOP ROBOT MOVEMENT
+ * ============================================================ */
+
+/*
+ * stopWalking()
+ *
+ * Stops the robot's walking motion.
+ *
+ * The function:
+ *   1. Checks whether the robot is currently walking.
+ *   2. Sets all velocity components to zero.
+ *   3. Sends the updated movement command.
+ *   4. Updates the walking state.
+ *
+ * The delay allows the robot to complete the transition
+ * from walking to a stationary pose.
+ */
+void stopWalking()
+{
+    // Avoid sending unnecessary stop commands
+    if (!walking) {
+        return;
+    }
+
+    // Set movement velocity to zero
     velocity = {0.0f, 0.0f, 0.0f};
-    minihexa.move(&velocity, &position, &euler, 400);
+
+    // Command the robot to stop over 400 ms
+    minihexa.move(
+        &velocity,
+        &position,
+        &euler,
+        400
+    );
+
+    // Update the movement state
     walking = false;
+
+    // Allow the stopping movement to complete
     delay(450);
 }
 
-void startWalking() {
-    if (walking) return;
+
+/* ============================================================
+ * SECTION 3: START ROBOT MOVEMENT
+ * ============================================================ */
+
+/*
+ * startWalking()
+ *
+ * Commands the robot to walk forward toward the target.
+ *
+ * The function:
+ *   1. Checks whether the robot is already walking.
+ *   2. Sets the forward movement velocity.
+ *   3. Resets the body orientation.
+ *   4. Starts continuous walking.
+ *
+ * The final argument (-1) requests continuous movement
+ * rather than a fixed number of gait cycles.
+ */
+void startWalking()
+{
+    // Do not restart the gait if already walking
+    if (walking) {
+        return;
+    }
+
+    // Set forward walking velocity
     velocity = {0.0f, 1.0f, 0.0f};
+
+    // Keep the robot's body orientation neutral
     euler = {0.0f, 0.0f, 0.0f};
-    minihexa.move(&velocity, &position, &euler, 1000, -1);
+
+    // Start continuous forward movement
+    minihexa.move(
+        &velocity,
+        &position,
+        &euler,
+        1000,
+        -1
+    );
+
+    // Update the movement state
     walking = true;
+
     Serial.println("APPROACHING TARGET");
 }
 
-int readDetection() {
-    if (Wire.requestFrom(CAMERA_ADDR, (uint8_t)1) != 1 || !Wire.available()) {
-        return -1; // Camera communication failed
+
+/* ============================================================
+ * SECTION 4: READ CAMERA DETECTION RESULT
+ * ============================================================ */
+
+/*
+ * readDetection()
+ *
+ * Requests the latest object detection result from the
+ * ESP32-S3 camera module using I2C.
+ *
+ * Communication configuration:
+ *   Protocol      : I2C
+ *   Controller    : MiniHexa (Master)
+ *   Camera module : ESP32-S3 (Slave)
+ *   Slave address : 0x52
+ *   Message size  : 1 byte
+ *
+ * Expected values:
+ *
+ *   1  -> Punching bag detected
+ *   0  -> Punching bag not detected
+ *  -1  -> Communication error or invalid response
+ *
+ * Returns:
+ *   int containing the detection status.
+ */
+int readDetection()
+{
+    // Request one byte from the camera module
+    if (Wire.requestFrom(CAMERA_ADDR, (uint8_t)1) != 1 ||
+        !Wire.available()) {
+
+        // Camera communication failed
+        return -1;
     }
+
+    // Read the detection result
     int value = Wire.read();
+
+    // Accept only valid detection values (0 or 1)
     return (value == 0 || value == 1) ? value : -1;
 }
 
-void setup() {
+
+/* ============================================================
+ * SECTION 5: SYSTEM INITIALIZATION
+ * ============================================================ */
+
+/*
+ * setup()
+ *
+ * Runs once when the controller starts.
+ *
+ * Initialization sequence:
+ *
+ * 1. Initialize serial communication.
+ * 2. Initialize the MiniHexa robot.
+ * 3. Configure I2C communication.
+ * 4. Allow the hardware to stabilize.
+ * 5. Display the available action groups.
+ */
+void setup()
+{
+    // Initialize serial monitoring at 115200 baud
     Serial.begin(115200);
+
+    // Initialize the MiniHexa control system
     minihexa.begin();
+
+    /*
+     * Initialize the I2C master interface.
+     *
+     * SDA = GPIO 22
+     * SCL = GPIO 23
+     *
+     * These pins connect to the camera module's
+     * corresponding I2C pins.
+     */
     Wire.begin(22, 23);
+
+    // Allow the system to initialize
     delay(1000);
+
     Serial.println("MiniHexa AI Boxing Robot ready");
+
+    // Display available robot action groups
     minihexa.list_action_group_dir();
 }
 
-void loop() {
-    if (millis() - lastCheck < CHECK_INTERVAL_MS) return;
+
+
+/* ============================================================
+ * SECTION 6: ROBOT DECISION TABLE
+ * ============================================================
+ *
+ * The robot combines camera detection and ultrasonic
+ * distance measurements to determine its next action.
+ *
+ * +------------+-------------+-------------+----------------------+
+ * | Camera     | Distance    | Attacked    | Robot Action         |
+ * +------------+-------------+-------------+----------------------+
+ * | 0          | Any         | Any         | Stop walking         |
+ * | -1         | Any         | Any         | Stop (I2C error)     |
+ * | 1          | 0 mm        | Any         | Stop (invalid range) |
+ * | 1          | >= 200 mm   | Any         | Reset and approach   |
+ * | 1          | 151-199 mm  | false       | Approach target      |
+ * | 1          | <= 150 mm   | false       | Stop and attack      |
+ * | 1          | 151-199 mm  | true        | Remain stationary    |
+ * | 1          | <= 150 mm   | true        | Remain stationary    |
+ * +------------+-------------+-------------+----------------------+
+ *
+ * Camera values:
+ *   1  = Punching bag detected
+ *   0  = Punching bag not detected
+ *  -1  = I2C communication error
+ *
+ * Distance thresholds:
+ *   STOP_DISTANCE_MM  = 150 mm
+ *   RESET_DISTANCE_MM = 200 mm
+ *
+ * The difference between the two thresholds creates
+ * hysteresis, preventing repeated attacks when the
+ * measured distance fluctuates near the stopping point.
+ *
+ * NOTE:
+ * The robot does not actively search for a lost target.
+ * If detection fails, it stops until the target is
+ * detected again.
+ *
+ * ============================================================ */
+
+void loop()
+{
+    /*
+     * Limit the frequency of sensor checks.
+     *
+     * millis() returns the elapsed time since startup.
+     */
+    if (millis() - lastCheck < CHECK_INTERVAL_MS) {
+        return;
+    }
+
+    // Record the current check time
     lastCheck = millis();
 
+    // Read the latest AI detection result
     int detected = readDetection();
+
+    // Read the ultrasonic distance sensor (millimeters)
     uint16_t distance = minihexa.sensor.get_distance();
-    Serial.printf("AI: %d | Distance: %u mm\n", detected, distance);
 
+    // Display the sensor readings
+    Serial.printf(
+        "AI: %d | Distance: %u mm\n",
+        detected,
+        distance
+    );
+
+    /*
+     * Validate the detection and distance measurements.
+     *
+     * Stop if:
+     *   - No punching bag is detected.
+     *   - Camera communication fails.
+     *   - Distance sensor returns zero.
+     *
+     * A zero distance is treated as an invalid reading.
+     */
     if (detected != 1 || distance == 0) {
+
         stopWalking();
+
         return;
     }
 
-    if (distance >= RESET_DISTANCE_MM) attacked = false;
 
+    /* ========================================================
+     * SECTION 7: MOVEMENT AND COMBAT DECISION-MAKING
+     * ======================================================== */
+
+    /*
+     * Reset the attack state when the target is far enough.
+     *
+     * This allows the robot to perform another combat
+     * action after the target has moved away.
+     *
+     * The difference between STOP_DISTANCE_MM and
+     * RESET_DISTANCE_MM introduces hysteresis.
+     *
+     * This helps prevent repeated attacks caused by
+     * small fluctuations in distance measurements.
+     */
+    if (distance >= RESET_DISTANCE_MM) {
+        attacked = false;
+    }
+
+    /*
+     * CASE 1: Target is within attacking distance.
+     *
+     * Stop walking and execute the selected action group.
+     */
     if (distance <= STOP_DISTANCE_MM) {
+
+        // Stop before performing the combat action
         stopWalking();
+
+        // Execute the action only once per attack cycle
         if (!attacked) {
+
+            // Mark the action as triggered
             attacked = true;
+
             Serial.println("COMBAT MODE ACTIVATED!");
+
+            /*
+             * Execute the predefined combat action group.
+             *
+             * COMBAT_ACTION = 7 -> Combat 1
+             * COMBAT_ACTION = 8 -> Combat 2
+             *
+             * The action group contains predefined
+             * servo movements for the robot's legs.
+             */
             minihexa.action_group_run(COMBAT_ACTION);
+
             Serial.println("COMBAT COMPLETE");
-            // The action group ends in its final pose; next move() resumes gait control.
+
+            /*
+             * The action group ends in its final pose.
+             * A subsequent move() command resumes
+             * control through the walking gait.
+             */
         }
+
         return;
     }
 
-    if (!attacked) startWalking();
-    else stopWalking();
+    /*
+     * CASE 2: Target detected but not yet close enough.
+     *
+     * If the robot has not attacked, approach the target.
+     *
+     * If it has already attacked, remain stationary
+     * until the target moves beyond RESET_DISTANCE_MM.
+     */
+    if (!attacked) {
+
+        startWalking();
+
+    } else {
+
+        stopWalking();
+    }
+
+    // Short delay before the next control-loop iteration
     delay(100);
 }
